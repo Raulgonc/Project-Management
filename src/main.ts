@@ -3,6 +3,7 @@ import cors from 'cors';
 import { env } from './config/env';
 import prisma from './config/database';
 import authRoutes from './routes/auth.routes';
+import userRoutes from './routes/user.routes';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 // Rotas
 app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
 
 // Rota de health check — só para confirmar que o servidor está vivo
 app.get('/health', (_req, res) => {
