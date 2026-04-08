@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import * as clientService from '../services/client.service';
 
+// GET /clients — lista todos os clientes
 export async function getAllClients(_req: AuthRequest, res: Response): Promise<void> {
   try {
     const clients = await clientService.findAll();
@@ -11,6 +12,7 @@ export async function getAllClients(_req: AuthRequest, res: Response): Promise<v
   }
 }
 
+// GET /clients/:id — retorna cliente + projetos + lead de origem
 export async function getClientById(req: AuthRequest, res: Response): Promise<void> {
   try {
     const client = await clientService.findById(req.params.id);
@@ -20,6 +22,8 @@ export async function getClientById(req: AuthRequest, res: Response): Promise<vo
   }
 }
 
+// POST /clients — cria cliente manualmente (sem conversão de lead)
+// body: { name, email, phone?, company?, contractInfo?, notes? }
 export async function createClient(req: AuthRequest, res: Response): Promise<void> {
   try {
     const { name, email, phone, company, contractInfo, notes } = req.body;
@@ -36,6 +40,7 @@ export async function createClient(req: AuthRequest, res: Response): Promise<voi
   }
 }
 
+// PATCH /clients/:id — atualiza parcialmente os dados do cliente
 export async function updateClient(req: AuthRequest, res: Response): Promise<void> {
   try {
     const client = await clientService.update(req.params.id, req.body);
@@ -45,6 +50,7 @@ export async function updateClient(req: AuthRequest, res: Response): Promise<voi
   }
 }
 
+// DELETE /clients/:id — restrito a ADMIN (definido nas rotas)
 export async function deleteClient(req: AuthRequest, res: Response): Promise<void> {
   try {
     await clientService.remove(req.params.id);
