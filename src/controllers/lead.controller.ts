@@ -3,9 +3,12 @@ import { AuthRequest } from '../middleware/auth.middleware';
 import * as leadService from '../services/lead.service';
 import { LeadStatus, LeadSource } from '@prisma/client';
 
+// Lista todos os leads — aceita filtros opcionais via URL
+// Exemplos: GET /leads | GET /leads?status=NEW | GET /leads?source=WEBSITE&status=CONTACTED
 export async function getAllLeads(req: AuthRequest, res: Response): Promise<void> {
   try {
-    // Pega os filtros da URL — ex: /leads?status=NEW&source=WEBSITE
+    // req.query lê os parâmetros que vêm depois do "?" na URL
+    // Diferente do req.body (corpo da requisição) que é usado no POST/PATCH
     const { status, source } = req.query;
 
     const leads = await leadService.findAll({
@@ -19,6 +22,7 @@ export async function getAllLeads(req: AuthRequest, res: Response): Promise<void
   }
 }
 
+// GET /leads/:id
 export async function getLeadById(req: AuthRequest, res: Response): Promise<void> {
   try {
     const lead = await leadService.findById(req.params.id);
@@ -28,10 +32,12 @@ export async function getLeadById(req: AuthRequest, res: Response): Promise<void
   }
 }
 
+// POST /leads — body: { name, email, phone?, company?, source?, notes? }
 export async function createLead(req: AuthRequest, res: Response): Promise<void> {
   try {
     const { name, email, phone, company, source, notes } = req.body;
 
+    // name e email são os únicos obrigatórios — os demais podem ser preenchidos depois
     if (!name || !email) {
       res.status(400).json({ error: 'Nome e email são obrigatórios' });
       return;
@@ -44,6 +50,7 @@ export async function createLead(req: AuthRequest, res: Response): Promise<void>
   }
 }
 
+// PATCH /leads/:id — body com qualquer campo de UpdateLeadData
 export async function updateLead(req: AuthRequest, res: Response): Promise<void> {
   try {
     const lead = await leadService.update(req.params.id, req.body);
@@ -53,6 +60,7 @@ export async function updateLead(req: AuthRequest, res: Response): Promise<void>
   }
 }
 
+// DELETE /leads/:id — restrito a ADMIN (definido nas rotas)
 export async function deleteLead(req: AuthRequest, res: Response): Promise<void> {
   try {
     await leadService.remove(req.params.id);
@@ -62,9 +70,12 @@ export async function deleteLead(req: AuthRequest, res: Response): Promise<void>
   }
 }
 
+// POST /leads/:id/convert — converte o lead em cliente
+// Usamos POST porque é uma ação, não apenas uma edição de dados
 export async function convertLead(req: AuthRequest, res: Response): Promise<void> {
   try {
     const client = await leadService.convertToClient(req.params.id);
+    // 201 porque um novo recurso (cliente) foi criado durante a conversão
     res.status(201).json(client);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
