@@ -4,6 +4,7 @@ import { env } from './config/env';
 import prisma from './config/database';
 import authRoutes from './routes/auth.routes';
 import userRoutes from './routes/user.routes';
+import leadRoutes from './routes/lead.routes';
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 // Rotas
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
+app.use('/leads', leadRoutes);
 
 // Rota de health check — só para confirmar que o servidor está vivo
 app.get('/health', (_req, res) => {
