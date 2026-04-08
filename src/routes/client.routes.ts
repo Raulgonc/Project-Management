@@ -1,16 +1,17 @@
 import { Router } from 'express';
 import { authMiddleware, adminOnly } from '../middleware/auth.middleware';
+import { validate } from '../middleware/validate.middleware';
+import { createClientSchema, updateClientSchema } from '../validators/client.validator';
 import { getAllClients, getClientById, createClient, updateClient, deleteClient } from '../controllers/client.controller';
 
 const router = Router();
 
-// Todas as rotas de clientes exigem autenticação
 router.use(authMiddleware);
 
 router.get('/', getAllClients);
-router.get('/:id', getClientById);              // Retorna cliente + projetos + lead de origem
-router.post('/', createClient);
-router.patch('/:id', updateClient);
-router.delete('/:id', adminOnly, deleteClient); // Só ADMIN pode deletar
+router.get('/:id', getClientById);
+router.post('/', validate(createClientSchema), createClient);
+router.patch('/:id', validate(updateClientSchema), updateClient);
+router.delete('/:id', adminOnly, deleteClient);
 
 export default router;
