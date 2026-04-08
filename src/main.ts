@@ -8,6 +8,7 @@ import leadRoutes from './routes/lead.routes';
 import clientRoutes from './routes/client.routes';
 import projectRoutes from './routes/project.routes';
 import taskRoutes from './routes/task.routes';
+import invoiceRoutes from './routes/invoice.routes';
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/leads', leadRoutes);
 app.use('/clients', clientRoutes);
 app.use('/projects', projectRoutes);
 app.use('/tasks', taskRoutes);
+app.use('/invoices', invoiceRoutes);
 
 // Rota de health check — confirma que o servidor está rodando
 // Útil em produção para monitoramento automático e deploys
