@@ -9,6 +9,9 @@ import clientRoutes from './routes/client.routes';
 import projectRoutes from './routes/project.routes';
 import taskRoutes from './routes/task.routes';
 import invoiceRoutes from './routes/invoice.routes';
+import { errorHandler } from './middleware/error.middleware';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger';
 
 const app = express();
 
@@ -23,6 +26,9 @@ app.use(cors({
 // Permite que o servidor leia JSON no corpo das requisições
 // Sem essa linha, req.body viria como undefined nos controllers
 app.use(express.json());
+
+// Documentação Swagger — acessível em http://localhost:3000/docs
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Montagem das rotas — cada módulo tem seu prefixo de URL
 // Exemplo: qualquer rota começando com /auth vai para authRoutes
@@ -39,6 +45,10 @@ app.use('/invoices', invoiceRoutes);
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
+
+// Middleware de erros — deve ficar por último, depois de todas as rotas
+// O Express reconhece esse middleware pelos 4 parâmetros (err, req, res, next)
+app.use(errorHandler);
 
 // Função principal que inicializa o servidor
 async function main() {
